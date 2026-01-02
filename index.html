@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carregando vídeo...</title>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .loader {
+            border: 4px solid #333;
+            border-top: 4px solid #ff0000; /* Vermelho YouTube */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .btn {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #ff0000;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+    </style>
+
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    
+    fbq('init', '185994519269249'); // Seu ID inserido
+    fbq('track', 'PageView');
+    fbq('track', 'ViewContent');    // Seu evento específico
+    </script>
+    </head>
+<body>
+
+    <div class="loader"></div>
+    <h3>Abrindo o YouTube...</h3>
+    <p style="color: #ccc; font-size: 14px;">Se nada acontecer, clique abaixo:</p>
+    
+    <a href="#" id="manualLink" class="btn">Assistir Vídeo</a>
+
+    <script>
+        // Configurações do Vídeo
+        var videoID = "C-XfS4OJUCc"; 
+        var fallbackLink = "https://www.youtube.com/watch?v=" + videoID; // Link normal
+
+        // Links Inteligentes (Deep Links)
+        // iOS: Tenta abrir com o esquema youtube://
+        var iosLink = "youtube://watch?v=" + videoID;
+        // Android: Tenta abrir via Intent (mais agressivo para forçar o app)
+        var androidIntent = "intent://www.youtube.com/watch?v=" + videoID + "#Intent;package=com.google.android.youtube;scheme=https;end;";
+
+        // Função para detectar o dispositivo
+        function getMobileOS() {
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            if (/android/i.test(userAgent)) return "Android";
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) return "iOS";
+            return "unknown";
+        }
+
+        function redirect() {
+            var os = getMobileOS();
+            
+            if (os === "Android") {
+                // No Android, o Intent lida com o fallback automaticamente se o app não existir
+                window.location.href = androidIntent;
+            } else if (os === "iOS") {
+                // No iOS é mais delicado. Tentamos o App, se falhar (timeout), vai pro browser.
+                window.location.href = iosLink;
+                
+                // Fallback para iOS (se o app não abrir em 25ms, muda para o link normal)
+                setTimeout(function() {
+                    window.location.href = fallbackLink;
+                }, 25);
+            } else {
+                // Desktop
+                window.location.href = fallbackLink;
+            }
+        }
+
+        // Configura o botão manual também
+        document.getElementById('manualLink').href = fallbackLink;
+        document.getElementById('manualLink').onclick = function(e) {
+            e.preventDefault();
+            redirect();
+        };
+
+        // Inicia o redirecionamento automático após carregar o Pixel (1.5s)
+        setTimeout(redirect, 1500);
+
+    </script>
+
+</body>
+</html>
